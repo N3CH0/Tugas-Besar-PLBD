@@ -2,4 +2,3 @@
 Tugas Besar dari Pemrograman Lanjut
 <br>
 <p>ERD:
-![alt text](ERD_(Chen).jpeg)
