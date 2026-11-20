@@ -6,4 +6,4 @@ ERD:
 # Fih
 Le Fishe au chocolat: (dead meme)
 <br>
-Chocolat Fih.jpg
+![Chocolat Fih.jpg](<Chocolat Fih.jpg>)
