@@ -1,7 +1,7 @@
 # Tugas Besar PLBD
 Tugas Besar dari Pemrograman Lanjut
 <br>
-ERD:
+ERD (Chen):
 ![ERD Chen Toko Ikan.jpg](<ERD Chen Toko Ikan.jpg>)
 
 # Fih
