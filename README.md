@@ -2,6 +2,7 @@
 Tugas Besar dari Pemrograman Lanjut
 <br>
 ERD:
+![ERD Chen Toko Ikan.jpg](<ERD Chen Toko Ikan.jpg>)
 
 # Fih
 Le Fishe au chocolat: (dead meme)
@@ -11,4 +12,3 @@ Le Fishe au chocolat: (dead meme)
 # ERD
 Knock Knock
 <br>
-![ERD Chen Toko Ikan.jpg](<ERD Chen Toko Ikan.jpg>)
