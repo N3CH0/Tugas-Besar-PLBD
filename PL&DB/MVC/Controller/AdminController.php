@@ -40,7 +40,6 @@ class AdminController
         }
     }
 
-    // ==================== DASHBOARD ====================
     private function dashboard(): void
     {
         $totalBarang = $this->barang->totalBarang();
@@ -51,7 +50,6 @@ class AdminController
         require __DIR__ . '/../View/admin/dashboard/index.php';
     }
 
-    // ==================== BARANG ====================
     private function barang(): void
     {
         $aksi = $_GET['aksi'] ?? 'index';
@@ -163,7 +161,6 @@ class AdminController
         exit;
     }
 
-    // ==================== KATEGORI ====================
     private function kategori(): void
     {
         $aksi = $_GET['aksi'] ?? 'index';
@@ -251,7 +248,6 @@ class AdminController
         exit;
     }
 
-    // ==================== PENJUALAN ====================
     private function penjualan(): void
     {
         $aksi = $_GET['aksi'] ?? 'index';
@@ -335,10 +331,8 @@ class AdminController
         exit;
     }
 
-    // ==================== KARYAWAN ====================
     private function karyawan(): void
     {
-        // Only pemilik can manage karyawan
         if ($_SESSION['user_peran'] !== 'pemilik') {
             header('Location: index.php?page=dashboard');
             exit;
@@ -433,4 +427,3 @@ class AdminController
         exit;
     }
 }
-

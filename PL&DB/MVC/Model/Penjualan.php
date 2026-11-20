@@ -56,13 +56,11 @@ class Penjualan
     {
         $this->conn->begin_transaction();
         try {
-            // Calculate total
             $total = 0;
             foreach ($items as $item) {
                 $total += $item['jumlah'] * $item['harga_satuan'];
             }
 
-            // Insert penjualan
             $stmt = $this->conn->prepare(
                 'INSERT INTO penjualan (id_pengguna, metode_bayar, total) VALUES (?, ?, ?)'
             );
@@ -71,7 +69,6 @@ class Penjualan
             $id_penjualan = $this->conn->insert_id;
             $stmt->close();
 
-            // Insert detail + update stok
             $stmtDetail = $this->conn->prepare(
                 'INSERT INTO detail_penjualan (id_penjualan, id_barang, jumlah, harga_satuan, subtotal) VALUES (?, ?, ?, ?, ?)'
             );
@@ -128,4 +125,3 @@ class Penjualan
         return (int) $result->fetch_assoc()['total'];
     }
 }
-

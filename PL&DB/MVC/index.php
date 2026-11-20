@@ -3,10 +3,8 @@ session_start();
 
 $page = $_GET['page'] ?? 'home';
 
-// Guest pages (no login required)
 $guestPages = ['home', 'produk', 'login'];
 
-// Admin pages (login required)
 $adminPages = ['dashboard', 'barang', 'kategori', 'penjualan', 'karyawan', 'logout'];
 
 if (in_array($page, $guestPages)) {
@@ -19,7 +17,6 @@ if (in_array($page, $guestPages)) {
         header('Location: index.php');
         exit;
     }
-    // Check login
     if (!isset($_SESSION['user_id'])) {
         header('Location: index.php?page=login');
         exit;
@@ -28,9 +25,7 @@ if (in_array($page, $guestPages)) {
     $controller = new AdminController();
     $controller->jalankan($page);
 } else {
-    // Default to home
     require_once __DIR__ . '/Controller/GuestController.php';
     $controller = new GuestController();
     $controller->jalankan('home');
 }
-

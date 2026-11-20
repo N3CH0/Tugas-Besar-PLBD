@@ -82,4 +82,3 @@ class GuestController
         require __DIR__ . '/../View/auth/login.php';
     }
 }
-

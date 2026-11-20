@@ -1,11 +1,5 @@
--- ===================================================================
--- 4.2 DDL — CREATE DATABASE
--- ===================================================================
 CREATE DATABASE db_toko_ikan CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
--- ===================================================================
--- 4.3 DDL — CREATE TABLE dan Constraint
--- ===================================================================
 USE db_toko_ikan;
 
 CREATE TABLE pengguna (
@@ -110,35 +104,20 @@ CREATE TABLE ikan_mati (
     CONSTRAINT chk_ikan_mati_nilai CHECK (nilai_kerugian >= 0)
 ) ENGINE = InnoDB;
 
--- ===================================================================
--- 4.4 DDL — ALTER TABLE
--- ===================================================================
 USE db_toko_ikan;
 
--- 1. Kebutuhan/alasan perubahan: buku catatan penjualan menandai pembayaran
---    non-tunai dengan "TF" (transfer), sehingga metode_bayar perlu menambah
---    nilai 'transfer' agar pencatatan sesuai kondisi nyata.
 ALTER TABLE penjualan
 MODIFY metode_bayar ENUM('tunai', 'transfer', 'qris') NOT NULL DEFAULT 'tunai';
 
--- 2. Kebutuhan/alasan perubahan: nama barang di buku ditulis bebas dan tidak
---    seragam (masalah nomor 13), sehingga nama barang harus unik agar tidak
---    ada data ganda di master barang.
 ALTER TABLE barang
 ADD CONSTRAINT uq_barang_nama UNIQUE (nama_barang);
 
--- 3. Kebutuhan/alasan perubahan: laporan penjualan harian dan pencarian
---    riwayat berdasarkan tanggal harus cepat (masalah pencarian lambat),
---    sehingga kolom tanggal diberi index.
 ALTER TABLE penjualan ADD INDEX idx_penjualan_tanggal (tanggal);
 
 ALTER TABLE pembelian ADD INDEX idx_pembelian_tanggal (tanggal);
 
 ALTER TABLE ikan_mati ADD INDEX idx_ikan_mati_tanggal (tanggal);
 
--- 4. Kebutuhan/alasan perubahan: subtotal adalah atribut turunan sehingga
---    nilainya harus selalu sama dengan jumlah x harga, agar tidak terjadi
---    selisih seperti yang dialami toko.
 ALTER TABLE detail_penjualan
 ADD CONSTRAINT chk_dp_subtotal CHECK (
     subtotal = jumlah * harga_satuan
@@ -149,9 +128,6 @@ ADD CONSTRAINT chk_dpb_subtotal CHECK (
     subtotal = jumlah * harga_beli
 );
 
--- ===================================================================
--- 4.5 DML — INSERT
--- ===================================================================
 USE db_toko_ikan;
 
 INSERT INTO
@@ -299,11 +275,6 @@ INSERT INTO
     )
 VALUES (1, 2, '2026-10-12', 2, 12000);
 
--- ===================================================================
--- 5.1 SELECT untuk Kebutuhan Informasi Client
--- ===================================================================
-
--- Query 1: Laporan penjualan harian per metode pembayaran
 SELECT
     DATE(tanggal) AS tanggal,
     metode_bayar,
@@ -315,7 +286,6 @@ GROUP BY
     metode_bayar
 ORDER BY tanggal, metode_bayar;
 
--- Query 2: Stok barang dan peringatan stok menipis
 SELECT
     nama_barang,
     stok,
@@ -327,7 +297,6 @@ SELECT
 FROM barang
 ORDER BY (stok - stok_minimum), nama_barang;
 
--- Query 3: Laporan laba rugi sederhana
 SELECT (
         SELECT COALESCE(SUM(total), 0)
         FROM penjualan
@@ -351,7 +320,6 @@ SELECT (
         FROM ikan_mati
     ) AS laba_rugi;
 
--- Query 4: Ikan terlaris
 SELECT
     b.nama_barang,
     SUM(dp.jumlah) AS total_terjual,
@@ -367,14 +335,8 @@ GROUP BY
     b.nama_barang
 ORDER BY total_terjual DESC, b.nama_barang;
 
--- ===================================================================
--- 5.2 UPDATE
--- ===================================================================
-
--- Pemilik menaikkan harga jual cupang dari Rp 25.000 menjadi Rp 27.000
 UPDATE barang SET harga_jual = 27000 WHERE nama_barang = 'Cupang';
 
--- Pengecekan hasil update
 SELECT
     id_barang,
     nama_barang,
@@ -383,11 +345,6 @@ FROM barang
 WHERE
     nama_barang = 'Cupang';
 
--- ===================================================================
--- 5.3 DELETE
--- ===================================================================
-
--- Input data salah (transaksi dobel) untuk percobaan
 INSERT INTO
     penjualan (
         id_penjualan,
@@ -414,17 +371,12 @@ INSERT INTO
     )
 VALUES (5, 1, 1, 10000, 10000);
 
--- Hapus transaksi (detail_penjualan ikut terhapus karena ON DELETE CASCADE)
 DELETE FROM penjualan WHERE id_penjualan = 5;
 
--- Pengecekan hasil delete (keduanya bernilai 0)
 SELECT COUNT(*) FROM penjualan WHERE id_penjualan = 5;
 
 SELECT COUNT(*) FROM detail_penjualan WHERE id_penjualan = 5;
 
--- ===================================================================
--- 5.4 Query Antar Tabel (JOIN)
--- ===================================================================
 SELECT p.id_penjualan, p.tanggal, u.nama AS pencatat, b.nama_barang, dp.jumlah, dp.harga_satuan, dp.subtotal, p.metode_bayar
 FROM
     penjualan p

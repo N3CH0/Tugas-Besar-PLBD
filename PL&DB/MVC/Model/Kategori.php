@@ -53,4 +53,3 @@ class Kategori
         return $ok;
     }
 }
-

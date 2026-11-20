@@ -76,4 +76,3 @@ class Pengguna
         return $ok;
     }
 }
-

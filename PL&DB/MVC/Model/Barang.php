@@ -99,4 +99,3 @@ class Barang
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 }
-
