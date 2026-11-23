@@ -29,6 +29,8 @@
             <div class="alert-toast success"><i class="fa-solid fa-circle-check"></i> Data karyawan berhasil diperbarui!</div>
         <?php elseif ($status === 'hapus_sukses'): ?>
             <div class="alert-toast info"><i class="fa-solid fa-trash-can"></i> Karyawan berhasil dihapus!</div>
+        <?php elseif ($status === 'hapus_terakhir'): ?>
+            <div class="alert-toast error"><i class="fa-solid fa-circle-exclamation"></i> Karyawan terakhir tidak boleh dihapus! Toko harus memiliki minimal satu karyawan.</div>
         <?php endif; ?>
 
         <div class="card">
@@ -59,7 +61,11 @@
                             </td>
                             <td class="action-col">
                                 <a href="index.php?page=karyawan&aksi=edit&id=<?= $k['id_pengguna'] ?>" class="btn btn-warning btn-sm" title="Edit"><i class="fa-solid fa-pen"></i></a>
-                                <a href="index.php?page=karyawan&aksi=hapus&id=<?= $k['id_pengguna'] ?>" class="btn btn-danger btn-sm" title="Hapus" onclick="return confirm('Yakin hapus karyawan ini?')"><i class="fa-solid fa-trash"></i></a>
+                                <?php if (count($dataKaryawan) <= 1): ?>
+                                    <button type="button" class="btn btn-danger btn-sm" title="Hapus" onclick="alert('Tidak dapat menghapus karyawan! Ini adalah satu-satunya karyawan yang tersisa di toko.')"><i class="fa-solid fa-trash"></i></button>
+                                <?php else: ?>
+                                    <a href="index.php?page=karyawan&aksi=hapus&id=<?= $k['id_pengguna'] ?>" class="btn btn-danger btn-sm" title="Hapus" onclick="return confirm('Yakin hapus karyawan ini?')"><i class="fa-solid fa-trash"></i></a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

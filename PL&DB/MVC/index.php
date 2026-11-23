@@ -5,7 +5,7 @@ $page = $_GET['page'] ?? 'home';
 
 $guestPages = ['home', 'produk', 'login'];
 
-$adminPages = ['dashboard', 'barang', 'kategori', 'penjualan', 'karyawan', 'logout'];
+$adminPages = ['dashboard', 'barang', 'kategori', 'penjualan', 'pembelian', 'karyawan', 'logout'];
 
 if (in_array($page, $guestPages)) {
     require_once __DIR__ . '/Controller/GuestController.php';

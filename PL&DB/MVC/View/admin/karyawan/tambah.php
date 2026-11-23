@@ -46,7 +46,7 @@
                         <label for="password">Password</label>
                         <div class="input-group">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="text" id="password" name="password" class="form-control" placeholder="Masukkan password (standar)" value="<?= htmlspecialchars($dataForm['password']) ?>">
+                            <input type="text" id="password" name="password" class="form-control" placeholder="Masukkan password" value="<?= htmlspecialchars($dataForm['password']) ?>" required>
                         </div>
                     </div>
                     <div class="btn-group">

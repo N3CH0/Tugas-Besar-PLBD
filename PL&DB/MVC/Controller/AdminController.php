@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../Model/Barang.php';
 require_once __DIR__ . '/../Model/Kategori.php';
 require_once __DIR__ . '/../Model/Penjualan.php';
+require_once __DIR__ . '/../Model/Pembelian.php';
 require_once __DIR__ . '/../Model/Pengguna.php';
 
 class AdminController
@@ -9,6 +10,7 @@ class AdminController
     private Barang $barang;
     private Kategori $kategori;
     private Penjualan $penjualan;
+    private Pembelian $pembelian;
     private Pengguna $pengguna;
 
     public function __construct()
@@ -16,6 +18,7 @@ class AdminController
         $this->barang = new Barang();
         $this->kategori = new Kategori();
         $this->penjualan = new Penjualan();
+        $this->pembelian = new Pembelian();
         $this->pengguna = new Pengguna();
     }
 
@@ -30,6 +33,9 @@ class AdminController
                 break;
             case 'penjualan':
                 $this->penjualan();
+                break;
+            case 'pembelian':
+                $this->pembelian();
                 break;
             case 'karyawan':
                 $this->karyawan();
@@ -331,6 +337,102 @@ class AdminController
         exit;
     }
 
+    private function pembelian(): void
+    {
+        $aksi = $_GET['aksi'] ?? 'index';
+        $status = $_GET['status'] ?? '';
+
+        switch ($aksi) {
+            case 'tambah':
+                $this->pembelianTambah();
+                break;
+            case 'detail':
+                $this->pembelianDetail();
+                break;
+            case 'hapus':
+                $this->pembelianHapus();
+                break;
+            default:
+                $dataPembelian = $this->pembelian->semua();
+                require __DIR__ . '/../View/admin/pembelian/index.php';
+                break;
+        }
+    }
+
+    private function pembelianTambah(): void
+    {
+        $pesan = '';
+        $dataBarang = $this->barang->semua();
+        $dataPemasok = $this->pembelian->semuaPemasok();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_pemasok = (int) ($_POST['id_pemasok'] ?? 0);
+            $items = [];
+
+            if (isset($_POST['id_barang']) && is_array($_POST['id_barang'])) {
+                for ($i = 0; $i < count($_POST['id_barang']); $i++) {
+                    $id_b = (int) ($_POST['id_barang'][$i] ?? 0);
+                    $jml = (int) ($_POST['jumlah'][$i] ?? 0);
+                    $hrg = (float) ($_POST['harga_beli'][$i] ?? 0);
+
+                    if ($id_b > 0 && $jml > 0 && $hrg >= 0) {
+                        $items[] = [
+                            'id_barang' => $id_b,
+                            'jumlah' => $jml,
+                            'harga_beli' => $hrg,
+                        ];
+                    }
+                }
+            }
+
+            if (!$id_pemasok) {
+                $pesan = 'Pilih pemasok terlebih dahulu.';
+            } elseif (empty($items)) {
+                $pesan = 'Pilih minimal satu barang dengan jumlah dan harga beli yang valid.';
+            } else {
+                try {
+                    $this->pembelian->tambah($_SESSION['user_id'], $id_pemasok, $items);
+                    header('Location: index.php?page=pembelian&status=tambah_sukses');
+                    exit;
+                } catch (Exception $e) {
+                    $pesan = 'Gagal menyimpan transaksi pembelian: ' . $e->getMessage();
+                }
+            }
+        }
+        require __DIR__ . '/../View/admin/pembelian/tambah.php';
+    }
+
+    private function pembelianDetail(): void
+    {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        if (!$id) {
+            header('Location: index.php?page=pembelian');
+            exit;
+        }
+
+        $pembelian = $this->pembelian->cariById($id);
+        $detailPembelian = $this->pembelian->detail($id);
+
+        if (!$pembelian) {
+            header('Location: index.php?page=pembelian');
+            exit;
+        }
+
+        require __DIR__ . '/../View/admin/pembelian/detail.php';
+    }
+
+    private function pembelianHapus(): void
+    {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        if ($id) {
+            $this->pembelian->hapus($id);
+            header('Location: index.php?page=pembelian&status=hapus_sukses');
+            exit;
+        }
+        header('Location: index.php?page=pembelian');
+        exit;
+    }
+
     private function karyawan(): void
     {
         if ($_SESSION['user_peran'] !== 'pemilik') {
@@ -370,8 +472,8 @@ class AdminController
                 'password' => trim($_POST['password'] ?? ''),
             ];
 
-            if ($dataForm['nama'] === '' || $dataForm['username'] === '') {
-                $pesan = 'Nama dan username wajib diisi.';
+            if ($dataForm['nama'] === '' || $dataForm['username'] === '' || $dataForm['password'] === '') {
+                $pesan = 'Data karyawan tidak boleh kosong (Nama, Username, dan Password wajib diisi).';
             } else {
                 try {
                     $this->pengguna->tambah($dataForm['nama'], $dataForm['username'], $dataForm['password']);
@@ -401,7 +503,7 @@ class AdminController
             $password = trim($_POST['password'] ?? '');
 
             if ($dataForm['nama'] === '' || $dataForm['username'] === '') {
-                $pesan = 'Nama dan username wajib diisi.';
+                $pesan = 'Nama dan username karyawan tidak boleh kosong.';
             } else {
                 try {
                     $this->pengguna->ubah($id, $dataForm['nama'], $dataForm['username'], $password);
@@ -419,6 +521,11 @@ class AdminController
     {
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if ($id) {
+            $totalKaryawan = count($this->pengguna->semuaKaryawan());
+            if ($totalKaryawan <= 1) {
+                header('Location: index.php?page=karyawan&status=hapus_terakhir');
+                exit;
+            }
             $this->pengguna->hapus($id);
             header('Location: index.php?page=karyawan&status=hapus_sukses');
             exit;

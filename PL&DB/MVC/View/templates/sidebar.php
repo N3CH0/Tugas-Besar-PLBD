@@ -22,6 +22,9 @@ $initial = strtoupper(substr($userNama, 0, 1));
     <a href="index.php?page=penjualan" class="<?= $currentPage === 'penjualan' ? 'active' : '' ?>">
         <i class="fa-solid fa-cash-register"></i> Penjualan
     </a>
+    <a href="index.php?page=pembelian" class="<?= $currentPage === 'pembelian' ? 'active' : '' ?>">
+        <i class="fa-solid fa-truck-ramp-box"></i> Histori Pembelian
+    </a>
     <?php if ($userPeran === 'pemilik'): ?>
     <div class="sidebar-label">Kelola Akun</div>
     <a href="index.php?page=karyawan" class="<?= $currentPage === 'karyawan' ? 'active' : '' ?>">

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Toko Ikan Hias - Beranda</title>
+        <title>Sultan Taman Ikan</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
         <nav class="guest-nav">
             <a href="index.php" class="logo">
                 <i class="fa-solid fa-fish"></i>
-                <span>Toko Ikan Hias</span>
+                <span>Sultan Taman Ikan</span>
             </a>
             <div class="nav-links">
                 <a href="index.php" class="active"><i class="fa-solid fa-house"></i> Beranda</a>
@@ -91,7 +91,7 @@
         </section>
         <footer class="guest-footer">
             <p>&copy; <?= date('Y') ?> 
-            <strong>Toko Ikan Hias</strong> - Semua hak dilindungi (kecuali manusia).
+            <strong>Sultan Taman Ikan</strong> - Semua hak dilindungi <strong>(tidak termasuk manusia)</strong>.
             </p>
         </footer>
     </body>
